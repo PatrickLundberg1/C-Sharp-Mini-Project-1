@@ -3,9 +3,25 @@ using C_Sharp_Mini_Project_1;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 
-// Level 2, Type/Model/Brand/Date/Price (Office and Currency for level 3)
+// Level 3
 
 List<Asset> assets = new List<Asset>();
+
+// test list
+/*
+List<Asset> assets = new List<Asset>()
+            {
+                new Phone("iPhone", "8", "Spain", Convert.ToDateTime("2019-11-05"), 970),
+                new Computer("HP", "Elitebook", "Spain", Convert.ToDateTime("2022-05-01"), 1423),
+                new Phone("iPhone", "11", "Spain", Convert.ToDateTime("2022-04-25"), 990),
+                new Phone("iPhone", "X", "Sweden", Convert.ToDateTime("2019-08-05"), 1245),
+                new Phone("Motorola", "Razr", "Sweden", Convert.ToDateTime("2019-09-06"), 970),
+                new Computer("HP", "Elitebook", "Sweden", Convert.ToDateTime("2019-10-07"), 588),
+                new Computer("Asus", "W234", "USA", Convert.ToDateTime("2019-07-21"), 1200),
+                new Computer("Lenovo", "Yoga 730", "USA", Convert.ToDateTime("2019-09-28"), 835),
+                new Computer("Lenovo", "Yoga 530", "USA", Convert.ToDateTime("2019-11-21"), 1030)
+            };
+*/
 
 Console.WriteLine("Welcome to Asset Tracking! Type in \"exit\" at any time to stop the program and display all Assets.");
 string input = "", type = "", brand = "", model = "", office = "";
@@ -111,6 +127,39 @@ while (true)
         }
     }
 
+    while (!on_exit)
+    {
+        Console.Write("Please select the office for the asset. There are currently offices in Spain, Sweden and USA.\nPlease input SP, SW or US for (Sp)ain, (Sw)eden or (US)A: ");
+        input = (Console.ReadLine() ?? "").Trim().ToLower();
+
+        if (input == "exit")
+        {
+            on_exit = true;
+        }
+        else if (input == "sp" || input == "sw" || input == "us")
+        {
+            switch (input)
+            {
+                case "sp":
+                    office = "Spain";
+                    break;
+                case "sw":
+                    office = "Sweden";
+                    break;
+                default:
+                    office = "USA";
+                    break;
+            }
+            break;
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Command not understood, please try again.");
+            Console.ResetColor();
+        }
+    }
+
     if (on_exit)
     {
         break;
@@ -119,11 +168,11 @@ while (true)
     {
         if (type == "p")
         {
-            assets.Add(new Phone(brand, model, "", pd, price));
+            assets.Add(new Phone(brand, model, office, pd, price));
         }
         else if (type == "c")
         {
-            assets.Add(new Computer(brand, model, "", pd, price));
+            assets.Add(new Computer(brand, model, office, pd, price));
         }
 
         Console.ForegroundColor = ConsoleColor.Green;
@@ -133,10 +182,11 @@ while (true)
 }
 
 // display asset list
-Console.WriteLine("Type".PadRight(20) + "Brand".PadRight(20) + "Model".PadRight(20) + "Purchase Date".PadRight(20) + "Price in USD".PadRight(20));
-Console.WriteLine("----".PadRight(20) + "-----".PadRight(20) + "-----".PadRight(20) + "-------------".PadRight(20) + "------------".PadRight(20));
+const int space = 15;
+Console.WriteLine("Type".PadRight(space) + "Brand".PadRight(space) + "Model".PadRight(space) + "Office".PadRight(space) + "Purchase Date".PadRight(space) + "Price in USD".PadRight(space) + "Currency".PadRight(space) + "Local price today");
+Console.WriteLine("----".PadRight(space) + "-----".PadRight(space) + "-----".PadRight(space) + "------".PadRight(space) + "-------------".PadRight(space) + "------------".PadRight(space) + "--------".PadRight(space) + "-----------------");
 
-List<Asset> ordered_list = assets.OrderBy(a => a.GetType().Name).ThenBy(a => a.Purchase_date).ToList();
+List<Asset> ordered_list = assets.OrderBy(a => a.Office).ThenBy(a => a.Purchase_date).ToList();
 const int average_year = 365, average_month = 30;
 
 foreach(Asset asset in ordered_list)
@@ -147,7 +197,12 @@ foreach(Asset asset in ordered_list)
     {
         Console.ForegroundColor = ConsoleColor.Red;
     }
+    else if (age.TotalDays > (average_year * 3 - average_month * 6))
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+    }
 
-    Console.WriteLine(asset.GetType().Name.PadRight(20) + asset.Brand.PadRight(20) + asset.Model.PadRight(20) + asset.Purchase_date.ToString("MM/dd/yyyy").PadRight(20) + asset.Price.ToString().PadRight(20));
+    string currency = asset.GetCurrency();
+    Console.WriteLine(asset.GetType().Name.PadRight(space) + asset.Brand.PadRight(space) + asset.Model.PadRight(space) + asset.Office.PadRight(space) + asset.Purchase_date.ToString("MM\\/dd\\/yyyy").PadRight(space) + asset.Price.ToString().PadRight(space) + currency.PadRight(space) + asset.LocalPrice(currency).ToString("0.00"));
     Console.ResetColor();
 }

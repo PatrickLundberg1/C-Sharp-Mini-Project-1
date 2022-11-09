@@ -17,6 +17,47 @@ namespace C_Sharp_Mini_Project_1
             Price = price;
         }
 
+        public string GetCurrency()
+        {
+            if(Office == "USA")
+            {
+                return "USD";
+            }
+            else if(Office == "Sweden")
+            {
+                return "SEK";
+            }
+            else if(Office == "Spain")
+            {
+                return "EUR";
+            }
+
+            // failsafe text
+            return "ERROR";
+        }
+
+        public double LocalPrice(string currency)
+        {
+            if(currency == "USD")
+            {
+                // no change
+                return Price;
+            }
+            else if(currency == "SEK")
+            {
+                // USD to SEK
+                return Price * 10.8;
+            }
+            else if(currency == "EUR")
+            {
+                // USD to EUR
+                return Price * 0.99;
+            }
+
+            // fail number
+            return -1;
+        }
+
         public string Brand { get; set; }
         public string Model { get; set; }
         public string Office { get; set; }
