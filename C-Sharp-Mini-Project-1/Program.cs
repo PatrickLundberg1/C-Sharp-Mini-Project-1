@@ -31,7 +31,9 @@ while (true)
         }
         else
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Command not understood, please try again.");
+            Console.ResetColor();
         }
     }
 
@@ -82,7 +84,9 @@ while (true)
         }
         else
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Date format error, please try again");
+            Console.ResetColor();
         }
     }
 
@@ -101,7 +105,9 @@ while (true)
         }
         else
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Input format error, please type in an integer for the price.");
+            Console.ResetColor();
         }
     }
 
@@ -109,13 +115,20 @@ while (true)
     {
         break;
     }
-    else if(type == "p")
+    else
     {
-        assets.Add(new Phone(brand, model, "", pd, price));
-    }
-    else if(type == "c")
-    {
-        assets.Add(new Computer(brand, model, "", pd, price));
+        if (type == "p")
+        {
+            assets.Add(new Phone(brand, model, "", pd, price));
+        }
+        else if (type == "c")
+        {
+            assets.Add(new Computer(brand, model, "", pd, price));
+        }
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Asset successfully added!");
+        Console.ResetColor();
     }
 }
 
@@ -123,3 +136,18 @@ while (true)
 Console.WriteLine("Type".PadRight(20) + "Brand".PadRight(20) + "Model".PadRight(20) + "Purchase Date".PadRight(20) + "Price in USD".PadRight(20));
 Console.WriteLine("----".PadRight(20) + "-----".PadRight(20) + "-----".PadRight(20) + "-------------".PadRight(20) + "------------".PadRight(20));
 
+List<Asset> ordered_list = assets.OrderBy(a => a.GetType().Name).ThenBy(a => a.Purchase_date).ToList();
+const int average_year = 365, average_month = 30;
+
+foreach(Asset asset in ordered_list)
+{
+    TimeSpan age = DateTime.Now - asset.Purchase_date;
+
+    if(age.TotalDays > (average_year*3 - average_month * 3))
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+    }
+
+    Console.WriteLine(asset.GetType().Name.PadRight(20) + asset.Brand.PadRight(20) + asset.Model.PadRight(20) + asset.Purchase_date.ToString("MM/dd/yyyy").PadRight(20) + asset.Price.ToString().PadRight(20));
+    Console.ResetColor();
+}
